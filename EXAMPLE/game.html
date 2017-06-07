@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Simple Canvas Game</title>
+	</head>
+	<body>
+
+		<canvas id='viewport' width="800" height="600" style="outline: solid 1px black;"></canvas>
+
+		<script src='../AnimationManager.js'>         </script>
+		<script src='js/input.js'>        </script>
+     	<script src='js/renderer.js'>     </script>
+     	<script src='js/map.js'>          </script>
+          <script src='js/viewport.js'>     </script> <!--#NEW-->
+     	<script src='js/hero.js'>         </script>
+     	<script src='js/monster.js'>      </script>
+          <script src='js/boss.js'>      </script>
+          <script src='js/obstacle.js'>      </script>
+     	<script src='js/game.js'>         </script>
+
+     	<script>
+     		window.addEventListener('load', game.init);
+     	</script>
+	</body>
+</html>
