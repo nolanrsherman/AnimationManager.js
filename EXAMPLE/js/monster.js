@@ -23,9 +23,10 @@ function Monster()
 	this.height = 32 //#NEW
 
 //ANIMATION definitions
-var standAnimationArray = [new Sprite("images/monster.png")];
+var standAnimationArray = [new Sprite(this.image)];
 this.standAnimation = new Animation(0, standAnimationArray);
-this.aniManager = new AnimationManager(renderer.ctx, this.standAnimation)
+this.aniManager = new AnimationManager(renderer.ctx, this.standAnimation);
+this.aniManager.setDefaultAnimation(this.standAnimation);
 
 //End animation definitoins
 
@@ -36,8 +37,9 @@ this.aniManager = new AnimationManager(renderer.ctx, this.standAnimation)
 
 	this.draw = function()
 	{
-		//renderer.ctx.drawImage( this.image, this.x+viewport.x, this.y+viewport.y,32,32);
-		this.aniManager.draw(this.x+viewport.x, this.y+viewport.y);
+		var image = this.aniManager.getCurrentImage();//get the current sprites image from the animiation manager.
+		renderer.ctx.drawImage( image, this.x+viewport.x, this.y+viewport.y, image.width, image.height);
+
 	};
 
 	this.perish = function()

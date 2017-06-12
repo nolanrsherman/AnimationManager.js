@@ -18,18 +18,35 @@
 Defines the image that represents a single
 frame of an animation.
 */
-  function Sprite(imgSrc, xOrigin = null, yOrigin = null, w = null, h = null){
+  function Sprite(srcImg, xOrigin = 0, yOrigin = 0, width = null, height = null){
     /*PUBLIC INSTANCE VARIABLES*/
       this.description = ''; //a simple description
 
     /*PRIVATE VARS*/
-      var imageSource = imgSrc;
+      var sourceImage = srcImg;
+      var spriteImage = new Image();
       var originX = xOrigin;
-      var originY = 0;
-      var image = new Image();
+      var originY = yOrigin;
+      var image;
       var scale = 1;
+      var spriteWidth = width;
+      var spriteHeight = height;
 
-      var canvas = document.createElement("canvas");
+      let sourceReadyPromise = new Promise((resolve, reject) => {
+        // We call resolve(...) when what we were doing made async successful, and reject(...) when it failed.
+        // In this example, we use setTimeout(...) to simulate async code.
+        // In reality, you will probably be using something like XHR or an HTML5 API.
+        setTimeout(function(){
+          if(sourceImage.complete){
+            console.log("its ready");
+            resolve("Image is ready."); // Yay! Everything went well!
+          }else{
+            console.log("not ready");
+          }
+        }, 50 );
+
+      });
+
     /*PRIVILAGED METHODS*/
 
       //gets the image source
@@ -46,31 +63,62 @@ frame of an animation.
       }
       //gets the width of sprite from origin
       this.getSpriteWidth = function(){
-        return image.width;
+        return spriteImage.width;
       }
       //gets the height of sprite from origin
       this.getSpriteHeight = function(){
-        return image.height;
+        return spriteImage.height;
       }
 
       //returns the image of this Sprite
-      this.getImage = function(){
-        return image;
+      this.getSpriteImage = function(){
+        return spriteImage;
       }
 
       this.getHeight = function(){
-        return image.height * scale;
+        return spriteImage.height * scale;
       }
 
       this.getWidth = function(){
-        return image.width * scale;
+        return spriteImage.width * scale;
       }
 
     /*PRIVATE METHODS*/
+    function createSprite(){
+      var newSpriteImage = new Image();//image for storing sprite
+        sourceImage.crossOrigin="anonymous";
+      //create new canvas the width and height of the sprite.
+      var canvas = document.createElement("canvas");
+      canvas.height = spriteHeight;
+      canvas.width = spriteWidth;
+      console.log(canvas);
+      var ctx = canvas.getContext('2d');
+      //draw imageSource to canvas at negative origin values (origin x,y should be at canvas 0,0)
+      ctx.drawImage(sourceImage, xOrigin, yOrigin);
+      //convert canvas drawing to data uri
+      var canvasImageURL = canvas.toDataURL('image/jpeg', 1.0);
+      //set img src to data uri
+      newSpriteImage.src = canvasImageURL;
+      newSpriteImage.crossOrigin="anonymous";
+      //remove canvas.
+      console.log(newSpriteImage);
 
+      return sourceImage;// newSpriteImage;//return the sprite image
+    }
     /*CONSTRUCTOR INSTRUCTIONS*/
-      //set the source of the image to imgsrc
-      image.src = imageSource;
+
+      //set the source of the sprite image
+      sourceReadyPromise.then((successMessage) => {
+        // successMessage is whatever we passed in the resolve(...) function above.
+        // It doesn't have to be a string, but if it is only a succeed message, it probably will be.
+        console.log("Yay! " + successMessage);
+        //check null height/width props.
+          if(spriteHeight == null){ spriteHeight = sourceImage.height;}
+          if(spriteWidth == null){ spriteWidth = sourceImage.width;}
+        spriteImage = createSprite();
+      });
+
+
 
   }
   /* PUBLIC VARS */
@@ -163,6 +211,8 @@ controls animations, one instance should be attached per object.
         return fps;
       }
 
+      //@deprecated
+      /*
       this.draw = function(posX, posY){
 
           var image = currentAnimation.getCurrentSprite().getImage(); //image
@@ -180,10 +230,18 @@ controls animations, one instance should be attached per object.
 
 
         //ctx.drawImage( image, dx, dy, 32, 32)
-      }
+      }*/
 
       this.play = function(animation){
         currentAnimation = animation;
+      }
+
+      this.setDefaultAnimation = function(animation){
+        defaultAnimation = animation;
+      }
+
+      this.getCurrentImage = function(){
+        return currentAnimation.getCurrentSprite().getSpriteImage();
       }
 
     /*PRIVATE METHODS*/
