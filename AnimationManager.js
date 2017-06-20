@@ -29,7 +29,6 @@ frame of an animation.
       var image = new Image();
       var scale = 1;
 
-      var canvas = document.createElement("canvas");
     /*PRIVILAGED METHODS*/
 
       //gets the image source
