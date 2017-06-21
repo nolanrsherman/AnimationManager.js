@@ -132,17 +132,16 @@ Defines a group of sprites that play in sequential order at a given rate (FPS)
       this.getCurrentImage = function(startTime){
         //var index = this.frameindex;
         var now = Date.now();
-        console.log(now - startTime + " > " + 1000/fps);
-  		if (now - this.startTime > 1000/fps)
-  		{
 
   			//this.frameindex = ( index + 1) % this.sequence.length
   			//this.startTime = now
-            var index = ( Math.floor( (now - startTime) / 1000 ) * fps ) % sprites.length;
+            var index = (Math.floor( (now - startTime) / 1000 * fps ) ) % sprites.length;
             currentSprite = sprites[index];
+            console.log("current second: " + (now - startTime) / 1000  );
+            console.log("Frames Played: " + Math.floor( (now - startTime) / 1000 * fps ) );
+            console.log("index" + (Math.floor( (now - startTime) / 1000 * fps ) ) % sprites.length );
+            console.log("Switched to frame " + index);
 
-            console.log("Switched to frame" + index);
-  		}
   		return currentSprite.getImage();
       }
 
