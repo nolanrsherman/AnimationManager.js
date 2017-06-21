@@ -5,19 +5,20 @@ hero.y = viewport.height / 2;
 hero.speed = 3;
 hero.image = null;
 hero.health = 10;
-hero.isHiding = false;	//#NEW
-hero.poses = { up:         "images/link-up.png",
-			   down:       "images/link-down.png",
-			   right:      "images/link-right.png",
-			   left:       "images/link-left.png",
-			   swordup:    "images/link-attack-up.png", 
-			   sworddown:  "images/link-attack-down.png",
-			   swordright: "images/link-attack-right.png",
-			   swordleft:  "images/link-attack-left.png"
-			 };
-hero.currentPose = hero.poses.down;
+hero.isHiding = false;	//#NEWnew Animation
 hero.strength = 1;
 hero.stamina = 5;
+
+hero.poses = { 'up':         new Animation(["images/link-up.png", "images/link-up2.png"]),
+			   'down':       new Animation(["images/link-down.png", "images/link-down2.png"]),
+			   'right':      new Animation(["images/link-right.png", "images/link-right2.png"]),
+			   'left':       new Animation(["images/link-left.png", "images/link-left2.png"]),
+			   'swordup':    new Animation(["images/link-attack-up.png"]), 
+			   'sworddown':  new Animation(["images/link-attack-down.png"]),
+			   'swordright': new Animation(["images/link-attack-right.png"]),
+			   'swordleft':  new Animation(["images/link-attack-left.png"])
+			 };
+hero.currentPose = 'down';
 
 
 hero.setImage = function(img)
@@ -29,7 +30,10 @@ hero.setImage = function(img)
 
 hero.draw = function()
 {
-	hero.setImage(hero.currentPose);
+	//console.log(hero.currentPose)
+	//console.log(hero.poses[hero.currentPose] )
+	if (input.keysDown.size>0)
+		hero.image.src =  hero.poses[hero.currentPose].getImage();
 	renderer.ctx.drawImage( hero.image, hero.x-16, hero.y-16, 32,32 ); 
 };
 
@@ -42,7 +46,7 @@ hero.update = function()
 	if (input.keysDown.has(38)) //if (input.y < this.y - viewport.y ) 
 	{
 		
-		hero.currentPose = hero.poses.up;
+		hero.currentPose = "up";
 		viewport.y+=this.speed;
 		//viewport.y += (viewport.y < 0 && this.y == viewport.height/2 ) ? this.speed : 0;
 		//hero.y = (viewport.y == 0 || hero.y > viewport.height/2 ) ? hero.y - hero.speed : viewport.height/2; 
@@ -51,7 +55,7 @@ hero.update = function()
 	if (input.keysDown.has(40)) // if (input.y > this.y - viewport.y ) 
 	{
 		viewport.y-=this.speed;
-		hero.currentPose = hero.poses.down;
+		hero.currentPose = "down";
 		//viewport.y -= (viewport.y > -(map.currentMap.height-viewport.height) && this.y == viewport.height/2) ? this.speed : 0 ;
 		//hero.y = (viewport.y <= -(map.currentMap.height-viewport.height) || hero.y < viewport.height/2) ? hero.y + hero.speed : viewport.height/2; 
 	}	
@@ -59,7 +63,7 @@ hero.update = function()
 	if (input.keysDown.has(37)) //if (input.x < this.x - viewport.x ) 
 	{
 		viewport.x += this.speed;
-		hero.currentPose = hero.poses.left;
+		hero.currentPose = "left";
 		//viewport.x += (viewport.x < 0 && this.x == viewport.width/2 ) ? this.speed : 0;
 		//hero.x = (viewport.x == 0 || hero.x > viewport.width/2 ) ? hero.x - hero.speed : viewport.width/2; 
 	}	
@@ -67,7 +71,7 @@ hero.update = function()
 	if (input.keysDown.has(39)) //if (input.x > this.x - viewport.x ) 
 	{
 		viewport.x -= this.speed;
-		hero.currentPose = hero.poses.right;
+		hero.currentPose = "right";
 		//viewport.x -= (viewport.x > -(map.currentMap.width-viewport.width) && this.x == viewport.width/2) ? this.speed : 0 ;
 		//hero.x = (viewport.x <= -(map.currentMap.width-viewport.width) || hero.x < viewport.width/2) ? hero.x + hero.speed : viewport.width/2; 
 	}
@@ -96,11 +100,11 @@ hero.attackPose = function()
 {
 	switch(hero.currentPose)
 	{
-		case hero.poses.up: 		return hero.poses.swordup;
-		case hero.poses.down: 		return hero.poses.sworddown;
-		case hero.poses.right: 		return hero.poses.swordright;  
-		case hero.poses.left: 		return hero.poses.swordleft; 
-		default: 					return hero.currentPose;
+		case 'up': 		return 'swordup';
+		case 'down': 	return 'sworddown';
+		case 'right': 	return 'swordright';  
+		case 'left': 	return 'swordleft'; 
+		default: 		return hero.currentPose;
 	}
 }
 
@@ -108,11 +112,11 @@ hero.idlePose = function()
 {
 	switch(hero.currentPose)
 	{ 
-		case hero.poses.swordup: 	return hero.poses.up;
-		case hero.poses.sworddown: 	return hero.poses.down;
-		case hero.poses.swordright: return hero.poses.right;
-		case hero.poses.swordleft:  return hero.poses.left;
-		default: 					return hero.currentPose;
+		case 'swordup': 	return 'up';
+		case 'sworddown': 	return 'down';
+		case 'swordright':  return 'right';
+		case 'swordleft':   return 'left';
+		default: 			return hero.currentPose;
 	}
 }
 
@@ -122,7 +126,7 @@ hero.attack = function()
 {
 	//#NEW
 	var now = Date.now()
-	if (hero.isAttacking && !hero.currentPose.includes("attack") )
+	if (hero.isAttacking && !hero.currentPose.includes("sword") )
 	{
 		hero.currentPose = hero.attackPose(); 
 
@@ -137,7 +141,7 @@ hero.attack = function()
 			if ( hero.isTouching(monster) )
 			{	
 				var damage = ~~(1+ Math.random() * (hero.strength-1)/10);
-				if (hero.currentPose == hero.poses.swordup && heroy > monster.y)
+				if (hero.currentPose == "swordup" && heroy > monster.y)
 				{
 					console.log("up");
 					//hero.setImage(hero.poses.swordup);
@@ -145,7 +149,7 @@ hero.attack = function()
 					monster.takeDamage(damage);
 					monster.y += 32;
 				}
-				else if (hero.currentPose == hero.poses.sworddown && heroy < monster.y)
+				else if (hero.currentPose == "sworddown" && heroy < monster.y)
 				{
 					console.log("down");
 					//hero.setImage(hero.poses.sworddown);
@@ -153,7 +157,7 @@ hero.attack = function()
 					monster.takeDamage(damage);
 					monster.y -= 32;
 				}
-				else if (hero.currentPose == hero.poses.swordright && herox < monster.x)
+				else if (hero.currentPose == "swordright" && herox < monster.x)
 				{
 					console.log("right");
 					//hero.setImage(hero.poses.swordright);
@@ -161,7 +165,7 @@ hero.attack = function()
 					monster.takeDamage(damage);
 					monster.x += 32;
 				}
-				else if (hero.currentPose == hero.poses.swordleft && herox > monster.x)
+				else if (hero.currentPose == "swordleft" && herox > monster.x)
 				{
 					console.log("left");
 					//hero.setImage(hero.poses.swordleft);
