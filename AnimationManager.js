@@ -93,6 +93,7 @@ Defines a group of sprites that play in sequential order at a given rate (FPS)
       var sprites = spriteArray;
       var currentSprite = sprites[0];
       var scale = 1;
+      var startTime;
     /*PRIVILAGED METHODS*/
 
       //gets the current fps
@@ -128,6 +129,23 @@ Defines a group of sprites that play in sequential order at a given rate (FPS)
         return currentSprite.getWidth() * scale;
       }
 
+      this.getCurrentImage = function(startTime){
+        //var index = this.frameindex;
+        var now = Date.now();
+        console.log(now - startTime + " > " + 1000/fps);
+  		if (now - this.startTime > 1000/fps)
+  		{
+
+  			//this.frameindex = ( index + 1) % this.sequence.length
+  			//this.startTime = now
+            var index = ( Math.floor( (now - startTime) / 1000 ) * fps ) % sprites.length;
+            currentSprite = sprites[index];
+
+            console.log("Switched to frame" + index);
+  		}
+  		return currentSprite.getImage();
+      }
+
     /*PRIVATE METHODS*/
 
     /*CONSTRUCTOR INSTRUCTIONS*/
@@ -141,57 +159,37 @@ Defines a group of sprites that play in sequential order at a given rate (FPS)
 
 /*
 ---------------------
-  CLASS: AnimationManager
+  CLASS: AnimationPlayer
 ---------------------
 controls animations, one instance should be attached per object.
 */
-  function AnimationManager(canvasContext, defaultAnimation){
+  function AnimationPlayer(defaultAnimation){
     /*PUBLIC INSTANCE VARIABLES*/
       this.description = ''; //a simple description
 
     /*PRIVATE VARS*/
       var defaultAnimation = defaultAnimation
-      var ctx = canvasContext
-      var Animations = [];
       var currentAnimation = defaultAnimation;
+      var currentAnimationStartTime = Date.now();
 
     /*PRIVILAGED METHODS*/
 
-      //gets the current fps
-      this.getFps = function(){
-        return fps;
-      }
-
-      this.draw = function(posX, posY){
-
-          var image = currentAnimation.getCurrentSprite().getImage(); //image
-          var sx = currentAnimation.getCurrentSprite().getOriginX();// x origin of sprite
-          var sy = currentAnimation.getCurrentSprite().getOriginY();//y origin of sprite
-          var sw = currentAnimation.getCurrentSprite().getWidth();//width of sprite
-          var sh = currentAnimation.getCurrentSprite().getHeight();//height of sprite
-          var dx = posX; //the x position to draw at
-          var dy = posY;// the y position to draw at
-          var dw = currentAnimation.getCurrentSprite().getWidth();//how wide to draw it on canvas
-          var dh = currentAnimation.getCurrentSprite().getHeight();//how tall to draw it on canvas
-
-          //console.log(dw + ", " + dh);
-          ctx.drawImage(image, sx, sy, sw, sh, dx, dy, dw, dh);
-
-
-        //ctx.drawImage( image, dx, dy, 32, 32)
-      }
-
       this.play = function(animation){
+        currentAnimationStartTime = Date.now();
         currentAnimation = animation;
+      }
+
+      this.getCurrentAnimationImage = function(){
+          return currentAnimation.getCurrentImage(currentAnimationStartTime);
       }
 
     /*PRIVATE METHODS*/
 
     /*CONSTRUCTOR INSTRUCTIONS*/
-
+    this.play(defaultAnimation);
   }
 
   /* PUBLIC METHODS */
 
-/*---END AnimationManager CLASS
+/*---END AnimationPlayer CLASS
 ---------------------*/
