@@ -2,8 +2,8 @@ function Monster()
 {
 	this.health = 10;
 
-	this.x = 32 + (Math.random() * (map.currentMap.width - 64));
-	this.y = 32 + (Math.random() * (map.currentMap.height - 64))
+	this.x = 32 + (Math.random() * (map.currentMap.width - 64)); 
+	this.y = 32 + (Math.random() * (map.currentMap.height - 64)) 
 	//this.x = 32 + (Math.random() * (screen.width - 64));
 	//this.y = 32 + (Math.random() * (screen.height - 64));
 	this.image = new Image();
@@ -11,8 +11,6 @@ function Monster()
 
 	this.originx = this.x;
 	this.originy = this.y;
-
-
 
 	//this.health = 2; //#NEW
 	//#NEW
@@ -22,12 +20,6 @@ function Monster()
 	this.width = 32; //#NEW
 	this.height = 32 //#NEW
 
-//ANIMATION definitions
-var standAnimationArray = [new Sprite("images/monster.png")];
-this.standAnimation = new Animation(0, standAnimationArray);
-this.aniManager = new AnimationManager(renderer.ctx, this.standAnimation)
-
-//End animation definitoins
 
 	this.setImage = function (img)
 	{
@@ -36,8 +28,7 @@ this.aniManager = new AnimationManager(renderer.ctx, this.standAnimation)
 
 	this.draw = function()
 	{
-		//renderer.ctx.drawImage( this.image, this.x+viewport.x, this.y+viewport.y,32,32);
-		this.aniManager.draw(this.x+viewport.x, this.y+viewport.y);
+		renderer.ctx.drawImage( this.image, this.x+viewport.x, this.y+viewport.y,32,32); 
 	};
 
 	this.perish = function()
@@ -58,20 +49,20 @@ this.aniManager = new AnimationManager(renderer.ctx, this.standAnimation)
 	{
 		var herox = hero.x - viewport.x -16;
 		var heroy = hero.y - viewport.y -16;
-		var distance = Math.sqrt((herox-this.x)**2 + (heroy-this.y)**2)
+		var distance = Math.sqrt((herox-this.x)**2 + (heroy-this.y)**2) 
 		//console.log("hero:" + herox + ", " + heroy);
 		//console.log("distance: " + distance);
 
 		if (distance < 200 && hero.isHiding==false)
 		{
 			var speed = 2;
-			if (herox - this.x > 0 )
+			if (herox - this.x > 0 ) 
 				this.x += speed;
-			if (herox - this.x < 0 )
+			if (herox - this.x < 0 ) 
 				this.x -= speed;
-			if (heroy - this.y > 0 )
+			if (heroy - this.y > 0 ) 
 				this.y += speed;
-			if (heroy - this.y < 0 )
+			if (heroy - this.y < 0 ) 
 				this.y -= speed;
 			this.image.src = attackImage;
 
@@ -79,16 +70,15 @@ this.aniManager = new AnimationManager(renderer.ctx, this.standAnimation)
 		else if (this.originx != this.x || this.originy != this.y)
 		{
 			var speed = 1;
-			if (this.originx - this.x > 0 )
+			if (this.originx - this.x > 0 ) 
 				this.x += speed;
-			if (this.originx - this.x < 0 )
+			if (this.originx - this.x < 0 ) 
 				this.x -= speed;
-			if (this.originy - this.y > 0 )
+			if (this.originy - this.y > 0 ) 
 				this.y += speed;
-			if (this.originy - this.y < 0 )
+			if (this.originy - this.y < 0 ) 
 				this.y -= speed;
 			this.image.src = idleImage;
-			this.aniManager.play(this.standAnimation);
 		}
 	}
 
@@ -111,12 +101,12 @@ this.aniManager = new AnimationManager(renderer.ctx, this.standAnimation)
 	}
 
 	this.isTouching = function( gameObject )
-	{
-	// #Are they touching?
+	{ 
+	// #Are they touching? 
 	return ( this.x <= (gameObject.x + 32)
 		&& gameObject.x <= (this.x + 32)
 		&& this.y <= (gameObject.y + 32)
-		&& gameObject.y <= (this.y + 32) );
+		&& gameObject.y <= (this.y + 32) ); 
 	}
 
 	this.then = Date.now();
@@ -137,3 +127,5 @@ this.aniManager = new AnimationManager(renderer.ctx, this.standAnimation)
 	}
 
 };
+
+
