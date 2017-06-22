@@ -8,21 +8,10 @@ hero.health = 10;
 hero.isHiding = false;	//#NEWnew Animation
 hero.strength = 1;
 hero.stamina = 5;
+hero.timeSpaceBarHeld = 0;
 
 var direction = { up:1, right:2, down:3, left:4};
 hero.direction = direction.down;
-
-/*hero.poses = { 'up':         new Animation(["images/link-up.png", "images/link-up2.png"]),
-			   'down':       new Animation(["images/link-down.png", "images/link-down2.png"]),
-			   'right':      new Animation(["images/link-right.png", "images/link-right2.png"]),
-			   'left':       new Animation(["images/link-left.png", "images/link-left2.png"]),
-			   'swordup':    new Animation(["images/link-attack-up.png"]),
-			   'sworddown':  new Animation(["images/link-attack-down.png"]),
-			   'swordright': new Animation(["images/link-attack-right.png"]),
-			   'swordleft':  new Animation(["images/link-attack-left.png"])
-			 };
-hero.currentPose = 'down';
-*/
 
 hero.setImage = function(img)
 {
@@ -35,18 +24,18 @@ hero.setImage = function(img)
 */
 
 hero.poses = {
-          'up':        new Animation(4, [new Sprite("images/link-up.png")]),
-			   'down':       new Animation(4, [new Sprite("images/link-down.png")]),
-			   'right':      new Animation(4, [new Sprite("images/link-right2.png")]),
-			   'left':       new Animation(4, [new Sprite("images/link-left2.png")]),
-         'upWalk':     new Animation(4, [new Sprite("images/link-up.png"), new Sprite("images/link-up2.png")]),
-        'downWalk':    new Animation(4, [new Sprite("images/link-down.png"), new Sprite("images/link-down2.png")]),
-        'rightWalk':   new Animation(4, [new Sprite("images/link-right.png"), new Sprite("images/link-right2.png")]),
-        'leftWalk':    new Animation(4, [new Sprite("images/link-left.png"), new Sprite("images/link-left2.png")]),
-			   'swordup':    new Animation(1, [new Sprite("images/link-attack-up.png")]),
-			   'sworddown':  new Animation(1, [new Sprite("images/link-attack-down.png")]),
-			   'swordright': new Animation(1, [new Sprite("images/link-attack-right.png")]),
-			   'swordleft':  new Animation(1, [new Sprite("images/link-attack-left.png")])
+				'up':        new Animation(4, [new Sprite("images/link-up.png")]),
+				'down':       new Animation(4, [new Sprite("images/link-down.png")]),
+				'right':      new Animation(4, [new Sprite("images/link-right2.png")]),
+				'left':       new Animation(4, [new Sprite("images/link-left2.png")]),
+				'upWalk':     new Animation(4, [new Sprite("images/link-up.png"), new Sprite("images/link-up2.png")]),
+				'downWalk':    new Animation(4, [new Sprite("images/link-down.png"), new Sprite("images/link-down2.png")]),
+				'rightWalk':   new Animation(4, [new Sprite("images/link-right.png"), new Sprite("images/link-right2.png")]),
+				'leftWalk':    new Animation(4, [new Sprite("images/link-left.png"), new Sprite("images/link-left2.png")]),
+				'swordup':    new Animation(1, [new Sprite("images/link-attack-up.png")]),
+				'sworddown':  new Animation(1, [new Sprite("images/link-attack-down.png")]),
+				'swordright': new Animation(1, [new Sprite("images/link-attack-right.png")]),
+				'swordleft':  new Animation(1, [new Sprite("images/link-attack-left.png")])
 			 };
 
 hero.animation = new AnimationPlayer(hero.poses.down);
@@ -117,21 +106,39 @@ hero.update = function()
   }
 
   //ATTACK -------------------------------------------
+
 	if (input.keysDown.has(32))
 	{
-		hero.isAttacking = true;
-    switch(hero.direction){
-      case direction.up : hero.animation.play(hero.poses.swordup); break;
-      case direction.right : hero.animation.play(hero.poses.swordright); break;
-      case direction.down : hero.animation.play(hero.poses.sworddown); break;
-      case direction.left : hero.animation.play(hero.poses.swordleft); break;
-    }
+
+		if(hero.timeSpaceBarHeld < 1){
+			hero.isAttacking = true;
+		} else {
+			hero.isAttacking = false;
+		}
+		hero.timeSpaceBarHeld ++;
+
+	    switch(hero.direction){
+	      case direction.up 	: hero.animation.play(hero.poses.swordup); break;
+	      case direction.right	: hero.animation.play(hero.poses.swordright); break;
+	      case direction.down 	: hero.animation.play(hero.poses.sworddown); break;
+	      case direction.left 	: hero.animation.play(hero.poses.swordleft); break;
+	    }
 
 	} else {
-    
-  }
-	//hero.hide(); //#NEW
-	//this.attack();
+		hero.isAttacking = false;
+		hero.timeSpaceBarHeld = 0;
+		
+		switch(hero.animation.getCurrentAnimation())
+		{
+			case hero.poses.swordup 	: hero.animation.play(hero.poses.up); break;
+			case hero.poses.sworddown 	: hero.animation.play(hero.poses.down); break;
+			case hero.poses.swordright	: hero.animation.play(hero.poses.right); break;
+			case hero.poses.swordleft 	: hero.animation.play(hero.poses.left); break;
+		}
+  	}
+
+	hero.hide(); //#NEW
+	this.attack();
 
 };
 
@@ -173,11 +180,12 @@ hero.idlePose = function()
 
 
 hero.timer = Date.now();
+
 hero.attack = function()
 {
 	//#NEW
 	var now = Date.now()
-	if (hero.isAttacking && !hero.currentPose.includes("sword") )
+	if (hero.isAttacking )//&& !hero.currentPose.includes("sword") )
 	{
 		hero.currentPose = hero.attackPose();
 
@@ -190,47 +198,28 @@ hero.attack = function()
 			var monster = map.monsters[i];
 
 			if ( hero.isTouching(monster) )
-			{
+			{//ATTACKIGN WITH SWORD UP
 				var damage = ~~(1+ Math.random() * (hero.strength-1)/10);
-				if (hero.currentPose == "swordup" && heroy > monster.y)
+				if (hero.animation.getCurrentAnimation() == hero.poses.swordup && heroy > monster.y)
 				{
-					console.log("up");
-					//hero.setImage(hero.poses.swordup);
-					//delete map.monsters[i];
-					monster.takeDamage(damage);
-					monster.y += 32;
-				}
-				else if (hero.currentPose == "sworddown" && heroy < monster.y)
-				{
-					console.log("down");
-					//hero.setImage(hero.poses.sworddown);
-					//delete map.monsters[i];
 					monster.takeDamage(damage);
 					monster.y -= 32;
-				}
-				else if (hero.currentPose == "swordright" && herox < monster.x)
+				}//ATTACKING WITH SWORD DOWN
+				else if (hero.animation.getCurrentAnimation()  == hero.poses.sworddown && heroy < monster.y)
 				{
-					console.log("right");
-					//hero.setImage(hero.poses.swordright);
-					//delete map.monsters[i];
+					monster.takeDamage(damage);
+					monster.y += 32;
+				}//ATTACKING WITH SWORD RIGHT
+				else if (hero.animation.getCurrentAnimation()  == hero.poses.swordright && herox < monster.x)
+				{
 					monster.takeDamage(damage);
 					monster.x += 32;
-				}
-				else if (hero.currentPose == "swordleft" && herox > monster.x)
+				}//ATTACKING WITH SWORD LEFT
+				else if (hero.animation.getCurrentAnimation()  == hero.poses.swordleft && herox > monster.x)
 				{
-					console.log("left");
-					//hero.setImage(hero.poses.swordleft);
-					//delete map.monsters[i];
 					monster.takeDamage(damage);
 					monster.x -= 32;
 				}
-				//delete map.monsters[i];
-				/*if (input.keysDown.has(38) && map.monsters[i].y < heroy)
-				{
-					delete map.monsters[i];
-				}*/
-				//monster.perish();
-				//console.log("die" + map.monsters[i]);
 			}
 		}
 		//hero.image.src = idlePose;
