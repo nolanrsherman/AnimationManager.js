@@ -137,12 +137,13 @@ Defines a group of sprites that play in sequential order at a given rate (FPS)
   			//this.startTime = now
             var index = (Math.floor( (now - startTime) / 1000 * fps ) ) % sprites.length;
             currentSprite = sprites[index];
+            /*
             console.log("current second: " + (now - startTime) / 1000  );
             console.log("Frames Played: " + Math.floor( (now - startTime) / 1000 * fps ) );
             console.log("index" + (Math.floor( (now - startTime) / 1000 * fps ) ) % sprites.length );
             console.log("Switched to frame " + index);
-
-  		return currentSprite.getImage();
+            */
+  		     return currentSprite.getImage();
       }
 
     /*PRIVATE METHODS*/
@@ -174,12 +175,19 @@ controls animations, one instance should be attached per object.
     /*PRIVILAGED METHODS*/
 
       this.play = function(animation){
-        currentAnimationStartTime = Date.now();
-        currentAnimation = animation;
+        if(animation != currentAnimation){
+          currentAnimationStartTime = Date.now();
+          currentAnimation = animation;
+        }
+
       }
 
       this.getCurrentAnimationImage = function(){
           return currentAnimation.getCurrentImage(currentAnimationStartTime);
+      }
+
+      this.getCurrentAnimation = function(){
+        return currentAnimation;
       }
 
     /*PRIVATE METHODS*/

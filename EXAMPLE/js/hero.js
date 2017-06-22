@@ -9,6 +9,9 @@ hero.isHiding = false;	//#NEWnew Animation
 hero.strength = 1;
 hero.stamina = 5;
 
+var direction = { up:1, right:2, down:3, left:4};
+hero.direction = direction.down;
+
 /*hero.poses = { 'up':         new Animation(["images/link-up.png", "images/link-up2.png"]),
 			   'down':       new Animation(["images/link-down.png", "images/link-down2.png"]),
 			   'right':      new Animation(["images/link-right.png", "images/link-right2.png"]),
@@ -30,16 +33,27 @@ hero.setImage = function(img)
 /**
 * Animation Manager Test
 */
-var heroUpSprites = [new Sprite("images/link-up.png"), new Sprite("images/link-up2.png")];
-var defaultAnimation = new Animation (2, heroUpSprites);
-hero.animation = new AnimationPlayer(defaultAnimation);
+
+hero.poses = {
+          'up':        new Animation(4, [new Sprite("images/link-up.png")]),
+			   'down':       new Animation(4, [new Sprite("images/link-down.png")]),
+			   'right':      new Animation(4, [new Sprite("images/link-right2.png")]),
+			   'left':       new Animation(4, [new Sprite("images/link-left2.png")]),
+         'upWalk':     new Animation(4, [new Sprite("images/link-up.png"), new Sprite("images/link-up2.png")]),
+        'downWalk':    new Animation(4, [new Sprite("images/link-down.png"), new Sprite("images/link-down2.png")]),
+        'rightWalk':   new Animation(4, [new Sprite("images/link-right.png"), new Sprite("images/link-right2.png")]),
+        'leftWalk':    new Animation(4, [new Sprite("images/link-left.png"), new Sprite("images/link-left2.png")]),
+			   'swordup':    new Animation(1, [new Sprite("images/link-attack-up.png")]),
+			   'sworddown':  new Animation(1, [new Sprite("images/link-attack-down.png")]),
+			   'swordright': new Animation(1, [new Sprite("images/link-attack-right.png")]),
+			   'swordleft':  new Animation(1, [new Sprite("images/link-attack-left.png")])
+			 };
+
+hero.animation = new AnimationPlayer(hero.poses.down);
 
 hero.draw = function()
 {
-	//console.log(hero.currentPose)
-	//console.log(hero.poses[hero.currentPose] )
-	if (input.keysDown.size>0)
-		//hero.image.src =  hero.poses[hero.currentPose].getImage();
+
 	renderer.ctx.drawImage( hero.animation.getCurrentAnimationImage(), hero.x-16, hero.y-16, 32,32 );
 };
 
@@ -48,45 +62,76 @@ hero.draw = function()
 hero.update = function()
 {
 
-	//UP
+	//UP -------------------------------------------
 	if (input.keysDown.has(38)) //if (input.y < this.y - viewport.y )
 	{
-
-		hero.currentPose = "up";
+    hero.animation.play(hero.poses.upWalk);
 		viewport.y+=this.speed;
-		//viewport.y += (viewport.y < 0 && this.y == viewport.height/2 ) ? this.speed : 0;
-		//hero.y = (viewport.y == 0 || hero.y > viewport.height/2 ) ? hero.y - hero.speed : viewport.height/2;
-	}
-	//DOWN
+    hero.direction = direction.up;
+
+	} else { // if the key is not up, but the last animation that played was walkUp
+      if( hero.animation.getCurrentAnimation() == hero.poses.upWalk)
+      {
+        hero.animation.play(hero.poses.up);//play the idle up animation.
+      }
+  }
+
+	//DOWN -------------------------------------------
 	if (input.keysDown.has(40)) // if (input.y > this.y - viewport.y )
 	{
+    hero.animation.play(hero.poses.downWalk);
 		viewport.y-=this.speed;
-		hero.currentPose = "down";
-		//viewport.y -= (viewport.y > -(map.currentMap.height-viewport.height) && this.y == viewport.height/2) ? this.speed : 0 ;
-		//hero.y = (viewport.y <= -(map.currentMap.height-viewport.height) || hero.y < viewport.height/2) ? hero.y + hero.speed : viewport.height/2;
-	}
-	//LEFT
+    hero.direction = direction.down;
+
+  } else { // if the key is not up, but the last animation that played was walkUp
+      if( hero.animation.getCurrentAnimation() == hero.poses.downWalk)
+      {
+        hero.animation.play(hero.poses.down);//play the idle up animation.
+      }
+  }
+	//--LEFT -------------------------------------------
 	if (input.keysDown.has(37)) //if (input.x < this.x - viewport.x )
 	{
+    hero.animation.play(hero.poses.leftWalk);
 		viewport.x += this.speed;
-		hero.currentPose = "left";
-		//viewport.x += (viewport.x < 0 && this.x == viewport.width/2 ) ? this.speed : 0;
-		//hero.x = (viewport.x == 0 || hero.x > viewport.width/2 ) ? hero.x - hero.speed : viewport.width/2;
-	}
-	//RIGHT
+    hero.direction = direction.left;
+
+	} else { // if the key is not up, but the last animation that played was walkUp
+      if( hero.animation.getCurrentAnimation() == hero.poses.leftWalk)
+      {
+        hero.animation.play(hero.poses.left);//play the idle up animation.
+      }
+  }
+	//RIGHT -------------------------------------------
 	if (input.keysDown.has(39)) //if (input.x > this.x - viewport.x )
 	{
+    hero.animation.play(hero.poses.rightWalk);
 		viewport.x -= this.speed;
-		hero.currentPose = "right";
-		//viewport.x -= (viewport.x > -(map.currentMap.width-viewport.width) && this.x == viewport.width/2) ? this.speed : 0 ;
-		//hero.x = (viewport.x <= -(map.currentMap.width-viewport.width) || hero.x < viewport.width/2) ? hero.x + hero.speed : viewport.width/2;
-	}
+    hero.direction = direction.right;
+
+	} else { // if the key is not up, but the last animation that played was walkUp
+      if( hero.animation.getCurrentAnimation() == hero.poses.rightWalk)
+      {
+        hero.animation.play(hero.poses.right);//play the idle up animation.
+      }
+  }
+
+  //ATTACK -------------------------------------------
 	if (input.keysDown.has(32))
 	{
 		hero.isAttacking = true;
-	}
-	hero.hide(); //#NEW
-	this.attack();
+    switch(hero.direction){
+      case direction.up : hero.animation.play(hero.poses.swordup); break;
+      case direction.right : hero.animation.play(hero.poses.swordright); break;
+      case direction.down : hero.animation.play(hero.poses.sworddown); break;
+      case direction.left : hero.animation.play(hero.poses.swordleft); break;
+    }
+
+	} else {
+    
+  }
+	//hero.hide(); //#NEW
+	//this.attack();
 
 };
 
