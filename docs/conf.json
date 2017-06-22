@@ -1,0 +1,28 @@
+{
+  "tags": {
+    "allowUnknownTags": true
+  },
+  "plugins": ["plugins/markdown"],
+  "templates": {
+    "logoFile": "",
+    "cleverLinks": true,
+    "monospaceLinks": false,
+    "dateFormat": "ddd MMM Do YYYY",
+    "outputSourceFiles": true,
+    "outputSourcePath": true,
+    "systemName": "AnimationManager.JS",
+    "footer": "",
+    "copyright": "AnimationManager.js Copyright © 2017-2020 Nolan Sherman and the University of New Orleans Computer Science Department.",
+    "navType": "vertical",
+    "theme": "yeti",
+    "linenums": false,
+    "collapseSymbols": true,
+    "inverseNav": true,
+    "protocol": "html://",
+    "methodHeadingReturns": false
+  },
+  "markdown": {
+    "parser": "gfm",
+    "hardwrap": true
+  }
+}
